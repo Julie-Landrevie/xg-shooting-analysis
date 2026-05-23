@@ -22,6 +22,26 @@ La conversion brute (buts / tirs) est trop sensible à la variance sur un petit 
 
 ---
 
+## ⚠️ Limites des données StatsBomb Open Data
+
+StatsBomb publie gratuitement une **sélection de matchs** par compétition — pas la saison entière.  
+Pour La Liga par exemple, seuls les matchs de **Barcelona** sont couverts (~34-35 matchs sur 380).
+
+| Compétition | Matchs disponibles | Remarque |
+|-------------|-------------------|----------|
+| La Liga 2020/21 | ~35 matchs | Matchs Barcelona uniquement |
+| La Liga 2019/20 | ~33 matchs | Matchs Barcelona uniquement |
+| Champions League | ~120 matchs | Plusieurs équipes couvertes |
+| WSL 2020/21 | ~130 matchs | Couverture plus large |
+| EURO 2020 | ~51 matchs | Tournoi complet |
+| Coupe du Monde 2022 | ~64 matchs | Tournoi complet |
+
+> **Conséquence pratique :** Les classements "top tireurs" de La Liga reflètent l'échantillon disponible, pas le championnat entier. Pour des analyses inter-équipes représentatives, préférer les tournois complets (EURO, Coupe du Monde) ou la WSL.
+
+L'app affiche automatiquement un avertissement indiquant le nombre de matchs couverts pour chaque compétition.
+
+---
+
 ## 🎯 Fonctionnalités
 
 ### 📊 Dashboard Streamlit interactif
@@ -61,7 +81,7 @@ xg-shooting-analysis/
 ├── src/
 │   ├── data_loader.py        # Chargement & nettoyage données StatsBomb
 │   ├── metrics.py            # Calcul des métriques xG
-│   └── viz.py                # Visualisations (shot map, heatmap, timeline...)
+│   └── viz.py                # Visualisations + dictionnaire 264 noms connus
 │
 ├── notebooks/
 │   └── 01_xg_shooting_analysis.ipynb   # Analyse complète La Liga 2020/21
@@ -87,7 +107,7 @@ xg-shooting-analysis/
 
 ```bash
 # Cloner le repo
-git clone https://github.com/julie-landrevie/xg-shooting-analysis.git
+git clone https://github.com/Julie-Landrevie/xg-shooting-analysis.git
 cd xg-shooting-analysis
 
 # Installer les dépendances
@@ -102,7 +122,7 @@ streamlit run app.py
 
 Le dashboard s'ouvre sur `http://localhost:8501`
 
-> **Note :** Le premier chargement d'une compétition télécharge les données StatsBomb (~1-2 min selon le nombre de matchs). Les données sont ensuite mises en cache dans `data/cache/` pour les prochaines sessions.
+> **Note :** Le premier chargement d'une compétition télécharge les données StatsBomb (~1-2 min). Les données sont ensuite mises en cache dans `data/cache/` pour les prochaines sessions.
 
 ### Lancer le notebook
 
@@ -119,7 +139,7 @@ jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
 | **Données** | [statsbombpy](https://github.com/statsbomb/statsbombpy) — API Python StatsBomb Open Data |
 | **Manipulation** | pandas, numpy |
 | **Visualisation terrain** | [mplsoccer](https://mplsoccer.readthedocs.io/) — terrains de foot avec matplotlib |
-| **Graphiques** | matplotlib, seaborn |
+| **Graphiques** | matplotlib |
 | **Dashboard** | Streamlit |
 | **Notebook** | Jupyter, nbformat |
 
@@ -139,31 +159,15 @@ jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
 
 ---
 
-## 🌍 Données disponibles
+## 💡 Insights clés — La Liga 2020/2021 (matchs Barcelona)
 
-Le projet utilise les **données open source gratuites de StatsBomb**, accessibles via `statsbombpy` sans authentification :
+*(Extraits de l'analyse notebook — données partielles, matchs Barcelona uniquement)*
 
-| Compétition | Saisons disponibles |
-|-------------|-------------------|
-| La Liga | 2020/21, 2019/20 |
-| Champions League | 2018/19, 2017/18, 2016/17, 2015/16, 2014/15... |
-| WSL (Women's Super League) | 2020/21 |
-| EURO | 2020 |
-| Coupe du Monde | 2022 (hommes), 2019 (femmes) |
-| African Cup of Nations | 2023 |
-
-> La liste complète est accessible via `list_competitions()` dans le module `data_loader.py`.
-
----
-
-## 💡 Insights clés — La Liga 2020/2021
-
-*(Extraits de l'analyse notebook)*
-
-- **Lionel Messi** accumule le xG le plus élevé de la saison mais affiche une overperformance négative — ses occasions de qualité n'ont pas toutes été converties sur cette saison
-- **Barcelona** génère le xG/match le plus élevé du championnat, confirmant une domination offensive structurelle
-- **La surface centrale** concentre le plus grand nombre de tirs, mais c'est la zone **penalty / but vide** qui affiche le xG moyen par tir le plus élevé
-- La **dernière demi-heure** (60–90') est la tranche horaire la plus dangereuse en termes de xG cumulé sur l'ensemble de la saison
+- **Lionel Messi** domine largement avec 195 tirs et ~23 xG sur la saison — meilleur créateur d'occasions de loin
+- **Arturo Vidal** affiche la meilleure overperformance (+3.68) — finisseur très efficace sur peu d'occasions
+- **Martin Braithwaite** est le plus malchanceux (−1.82) — crée des occasions de qualité mais ne les convertit pas
+- La **surface centrale** concentre le plus de tirs, mais la zone **penalty / but vide** a le xG moyen le plus élevé
+- La **dernière demi-heure** (60–90') est la tranche la plus dangereuse en xG cumulé
 
 ---
 
@@ -181,9 +185,9 @@ Le projet utilise les **données open source gratuites de StatsBomb**, accessibl
 
 | Projet | Description | Lien |
 |--------|-------------|------|
-| **MPG Optimizer** | Fantasy football analytics — scoring, optimiseur XI | [→ Repo](https://github.com/julie-landrevie/mpg-optimizer) |
-| **Tactical Dashboard** | Pass Network, xG, Pressing, Heatmaps | [→ Repo](https://github.com/julie-landrevie/tactical-dashboard) |
-| **World Cup 2026 Predictor** | Prédictions scores & buteurs Coupe du Monde | [→ Repo](https://github.com/julie-landrevie/worldcup-2026-predictor) |
+| **MPG Optimizer** | Fantasy football analytics — scoring, optimiseur XI | [→ Repo](https://github.com/Julie-Landrevie/mpg-optimizer) |
+| **Tactical Dashboard** | Pass Network, xG, Pressing, Heatmaps | [→ Repo](https://github.com/Julie-Landrevie/tactical-dashboard) |
+| **World Cup 2026 Predictor** | Prédictions scores & buteurs Coupe du Monde | [→ Repo](https://github.com/Julie-Landrevie/worldcup-2026-predictor) |
 
 ---
 

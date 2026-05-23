@@ -171,6 +171,10 @@ with st.sidebar:
         st.error("Aucune donnée disponible pour cette compétition.")
         st.stop()
 
+    # Normalisation des noms pour l'affichage
+    from src.viz import normalize_names_column
+    shots_all = normalize_names_column(shots_all)
+
     # Filtre équipe
     teams_list = sorted(shots_all["team"].dropna().unique().tolist())
     selected_team = st.selectbox("🏟️ Équipe", options=["Toutes les équipes"] + teams_list)
@@ -258,6 +262,13 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
 # ──────────────────────────────────────────────────────────────
 
 with tab1:
+    # Avertissement données partielles StatsBomb
+    n_matches = shots_all["match_id"].nunique()
+    st.info(
+        f"ℹ️ **Données partielles** — StatsBomb Open Data couvre **{n_matches} matchs** "
+        f"pour cette compétition/saison (principalement les matchs d'une équipe par compétition, "
+        f"ex : Barcelona pour La Liga). Les classements reflètent cet échantillon, pas la saison entière."
+    )
     if shots.empty:
         st.warning("Aucun tir pour cette sélection.")
     else:
