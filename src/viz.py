@@ -35,6 +35,330 @@ from mplsoccer import Pitch, VerticalPitch
 warnings.filterwarnings("ignore")
 
 # ============================================================
+# DICTIONNAIRE DES NOMS CONNUS — normalisation pour l'affichage
+# ============================================================
+# Les données StatsBomb utilisent les noms civils complets des joueurs
+# (ex: "Lionel Andrés Messi Cuccittini"), peu lisibles pour le grand public.
+# Ce dictionnaire mappe chaque nom complet vers son nom connu.
+
+PLAYER_NAMES = {
+    # A
+    "Achraf Hakimi Mouh": "Achraf Hakimi",
+    "Adam David Lallana": "Adam Lallana",
+    "Adriano Correia Claro": "Adriano",
+    "Adrián González Morales": "Adrián González",
+    "Adrián López Álvarez": "Adrián López",
+    "Adrián Nicolás Luna Retamar": "Adrián Luna",
+    "Aitana Bonmati Conca": "Aitana Bonmatí",
+    "Aleksandar Mitrović": "Aleksandar Mitrović",
+    "Alexia Putellas Segura": "Alexia Putellas",
+    "Alexis Alejandro Sánchez Sánchez": "Alexis Sánchez",
+    "Alexis Mac Allister": "Alexis Mac Allister",
+    "Alfred John Momar N''Diaye": "Alfred N'Diaye",
+    "Anderson Luís de Souza": "Anderson",
+    "Andrea Pirlo": "Andrea Pirlo",
+    "Andrés Iniesta Luján": "Andrés Iniesta",
+    "Anssumane Fati": "Ansu Fati",
+    "Antoine Griezmann": "Antoine Griezmann",
+    "Arturo Erasmo Vidal Pardo": "Arturo Vidal",
+    "Arthur Henrique Ramos de Oliveira Melo": "Arthur",
+    "Athenea del Castillo Belvide": "Athenea del Castillo",
+    "Aymeric Laporte": "Aymeric Laporte",
+    # B
+    "Bamidele Alli": "Dele Alli",
+    "Bartholomew Owogbalor Ogbeche": "Bartholomew Ogbeche",
+    "Bastian Schweinsteiger": "Bastian Schweinsteiger",
+    "Bethany Mead": "Beth Mead",
+    "Bukayo Saka": "Bukayo Saka",
+    # C
+    "Carles Puyol i Saforcada": "Carles Puyol",
+    "Carles Rexach i Cerdà": "Carles Rexach",
+    "Carlos Alberto Tevez": "Carlos Tevez",
+    "Carlos Alberto Torres": "Carlos Alberto",
+    "Carlos Arturo Bacca Ahumada": "Carlos Bacca",
+    "Carlos Caetano Bledorn Verri": "Cafu",
+    "Carlos Henrique Casimiro": "Casemiro",
+    "Christian Dannemann Eriksen": "Christian Eriksen",
+    "Clarence Seedorf": "Clarence Seedorf",
+    "Claudia Pina Medina": "Claudia Pina",
+    "Claudio Marchisio": "Claudio Marchisio",
+    "Claudio Paul Caniggia": "Claudio Caniggia",
+    "Clodoaldo Tavares de Santana": "Clodoaldo",
+    "Cole Palmer": "Cole Palmer",
+    "Cristian Tello Herrera": "Cristian Tello",
+    "Cristiano Ronaldo dos Santos Aveiro": "Cristiano Ronaldo",
+    "César Azpilicueta Tanco": "César Azpilicueta",
+    # D
+    "Daniel Alves da Silva": "Dani Alves",
+    "Daniel Munthe Agger": "Daniel Agger",
+    "Daniel Olmo Carvajal": "Dani Olmo",
+    "Daniel Parejo Muñoz": "Daniel Parejo",
+    "Danilo Luiz da Silva": "Danilo",
+    "David Luiz Moreira Marinho": "David Luiz",
+    "David Olatukunbo Alaba": "David Alaba",
+    "David Villa Sánchez": "David Villa",
+    "Davinson Sánchez Mina": "Davinson Sánchez",
+    "Denis Lemi Zakaria Lako Lado": "Denis Zakaria",
+    "Denis Suárez Fernández": "Denis Suárez",
+    "Dennis Bergkamp": "Dennis Bergkamp",
+    "Denzel Dumfries": "Denzel Dumfries",
+    "Deyverson Brum Silva Acosta": "Deyverson",
+    "Didier Yves Drogba Tébily": "Didier Drogba",
+    "Diego Alberto Milito": "Diego Milito",
+    "Diego Armando Maradona": "Diego Maradona",
+    "Diego Roberto Godín Leal": "Diego Godín",
+    "Dimitar Ivanov Berbatov": "Dimitar Berbatov",
+    "Dirk Wouter Johannes van Dijk": "Virgil van Dijk",
+    "Donyell Malen": "Donyell Malen",
+    "Duván Esteban Zapata Banguera": "Duván Zapata",
+    "Dušan Vlahović": "Dušan Vlahović",
+    # E
+    "Edmond Fayçal Tapsoba": "Edmond Tapsoba",
+    "Eduardo Gonçalves de Andrade": "Dudu",
+    "Edvaldo Izidio Neto": "Vavá",
+    "Ella Toone": "Ella Toone",
+    "Eric-Sylvain Bilal Abidal": "Eric Abidal",
+    "Esteban Matías Cambiasso Delau": "Esteban Cambiasso",
+    "Exequiel Alejandro Palacios": "Exequiel Palacios",
+    # F
+    "Fabian Lukas Schär": "Fabian Schär",
+    "Fernando José Torres Sanz": "Fernando Torres",
+    "Fernando Morientes Sánchez": "Fernando Morientes",
+    "Fernando Rubén Gago": "Fernando Gago",
+    "Ferrán Torres García": "Ferran Torres",
+    "Filipe Luís Kasmirski": "Filipe Luís",
+    "Filippo Inzaghi": "Filippo Inzaghi",
+    "Florian Wirtz": "Florian Wirtz",
+    "Francesc Fàbregas i Soler": "Cesc Fàbregas",
+    "Francisco António Machado Mota de Castro Trincão": "Trincão",
+    "Francisco Román Alarcón Suárez": "Isco",
+    "Franck Bilal Ribéry": "Franck Ribéry",
+    "Franck Yannick Kessié": "Franck Kessié",
+    "Frank Lampard": "Frank Lampard",
+    "Franz Beckenbauer": "Franz Beckenbauer",
+    "Frenkie de Jong": "Frenkie de Jong",
+    "Fridolina Rolfö": "Fridolina Rolfö",
+    "Fábio Henrique Tavares": "Fabinho",
+    # G
+    "Gabriel Omar Batistuta": "Gabriel Batistuta",
+    "Gareth Frank Bale": "Gareth Bale",
+    "Georgia Stanway": "Georgia Stanway",
+    "Georginio Wijnaldum": "Georginio Wijnaldum",
+    "Gerard Moreno Balaguero": "Gerard Moreno",
+    "Gerard Piqué Bernabéu": "Gerard Piqué",
+    "Gerhard Müller": "Gerd Müller",
+    "Gnégnéri Yaya Touré": "Yaya Touré",
+    "Gonzalo Gerardo Higuaín": "Gonzalo Higuaín",
+    "Gonçalo Manuel Ganchinho Guedes": "Gonçalo Guedes",
+    "Granit Xhaka": "Granit Xhaka",
+    # H
+    "Harry Kane": "Harry Kane",
+    "Harry Maguire": "Harry Maguire",
+    "Hayley Emma Raso": "Hayley Raso",
+    "Henrik Larsson": "Henrik Larsson",
+    "Hernán Jorge Crespo": "Hernán Crespo",
+    "Heung-Min Son": "Son Heung-min",
+    "Hugo Ekitike": "Hugo Ekitike",
+    # I
+    "Ivan Gennaro Gattuso": "Gennaro Gattuso",
+    "Ivan Rakitić": "Ivan Rakitić",
+    # J
+    "Jair Ventura Filho": "Jairzinho",
+    "James David Rodríguez Rubio": "James Rodríguez",
+    "James Philip Milner": "James Milner",
+    "Jamie Vardy": "Jamie Vardy",
+    "Jan Vertonghen": "Jan Vertonghen",
+    "Javier Hernández Balcázar": "Chicharito",
+    "Javier Martínez Aginaga": "Javi Martínez",
+    "Jean-Eric Maxim Choupo-Moting": "Choupo-Moting",
+    "Jennifer Hermoso Fuentes": "Jenni Hermoso",
+    "Jeremie Frimpong": "Jeremie Frimpong",
+    "Jesse Lingard": "Jesse Lingard",
+    "Jesús Navas González": "Jesús Navas",
+    "Ji-Sung Park": "Park Ji-sung",
+    "Johan Cruyff": "Johan Cruyff",
+    "Jordi Alba Ramos": "Jordi Alba",
+    "Jorge Resurrección Merodio": "Koke",
+    "Jordan Brian Henderson": "Jordan Henderson",
+    "José Antonio Reyes Calderón": "José Antonio Reyes",
+    "José Ely de Miranda": "Zizinho",
+    "José Ignacio Fernández Iglesias": "Nacho",
+    "José João Altafini": "Mazzola",
+    "José Luis Morales Nogales": "José Morales",
+    "José Marcelo Salas Melinao": "Marcelo Salas",
+    "José Martínez Sánchez": "Suso",
+    "João Miranda de Souza Filho": "Miranda",
+    "Juan Fernando Quintero Paniagua": "Juan Quintero",
+    "Juan Guillermo Cuadrado Bello": "Juan Cuadrado",
+    "Juan Manuel Mata García": "Juan Mata",
+    "Julián Álvarez": "Julián Álvarez",
+    "Jérôme Boateng": "Jérôme Boateng",
+    # K
+    "Karim Benzema": "Karim Benzema",
+    "Karl-Heinz Rummenigge": "Karl-Heinz Rummenigge",
+    "Katie McCabe": "Katie McCabe",
+    "Keira Walsh": "Keira Walsh",
+    "Kieran Trippier": "Kieran Trippier",
+    "Klaas-Jan Huntelaar": "Klaas-Jan Huntelaar",
+    "Kobbie Mainoo": "Kobbie Mainoo",
+    "Kolo Habib Touré": "Kolo Touré",
+    "Kylian Mbappé Lottin": "Kylian Mbappé",
+    # L
+    "Lauren Hemp": "Lauren Hemp",
+    "Lautaro Javier Martínez": "Lautaro Martínez",
+    "Leah Williamson": "Leah Williamson",
+    "Leandro Daniel Paredes": "Leandro Paredes",
+    "Leroy Sané": "Leroy Sané",
+    "Lina Magull": "Lina Magull",
+    "Lionel Andrés Messi Cuccittini": "Lionel Messi",
+    "Lothar Matthäus": "Lothar Matthäus",
+    "Lucas Rodrigues Moura da Silva": "Lucas Moura",
+    "Lucas Vázquez Iglesias": "Lucas Vázquez",
+    "Luis Alberto Suárez Díaz": "Luis Suárez",
+    "Luis Fernando Díaz Marulanda": "Luis Díaz",
+    "Luis Fernando Muriel Fruto": "Luis Muriel",
+    "Luka Modrić": "Luka Modrić",
+    "Luís Carlos Almeida da Cunha": "Deco",
+    # M
+    "Maicon Douglas Sisenando": "Maicon",
+    "Manoel Francisco dos Santos": "Garrincha",
+    "Manuel Neuer": "Manuel Neuer",
+    "Manuel Obafemi Akanji": "Manuel Akanji",
+    "Marc Bartra Aregall": "Marc Bartra",
+    "Marcelo Vieira da Silva Júnior": "Marcelo",
+    "Marco Asensio Willemsen": "Marco Asensio",
+    "Marco Reus": "Marco Reus",
+    "Marco Verratti": "Marco Verratti",
+    "Marcos Alonso Peña": "Marcos Alonso",
+    "Marcos Aoás Corrêa": "Marquinhos",
+    "Marcos Llorente Moreno": "Marcos Llorente",
+    "Marcus Rashford": "Marcus Rashford",
+    "Mario Alberto Kempes Chiodi": "Mario Kempes",
+    "Mario Gómez García": "Mario Gómez",
+    "Mario Mandžukić": "Mario Mandžukić",
+    "Martin Braithwaite Christensen": "Martin Braithwaite",
+    "Martín Palermo": "Martín Palermo",
+    "Mary Boio Fowler": "Mary Fowler",
+    "María Francesca Caldentey Oliver": "Mariona Caldentey",
+    "Mats Hummels": "Mats Hummels",
+    "Michael Laudrup": "Michael Laudrup",
+    "Michel Platini": "Michel Platini",
+    "Mikel Merino Zazón": "Mikel Merino",
+    "Mikel Oyarzabal Ugarte": "Mikel Oyarzabal",
+    "Miralem Pjanić": "Miralem Pjanić",
+    "Mohamed Salah": "Mohamed Salah",
+    # N
+    "N''Golo Kanté": "N'Golo Kanté",
+    "Neymar da Silva Santos Junior": "Neymar",
+    "Nikita Parris": "Nikita Parris",
+    "Nuno Ricardo de Oliveira Ribeiro": "Maniche",
+    # O
+    "Ole Gunnar Solskjær": "Ole Gunnar Solskjær",
+    "Ollie Watkins": "Ollie Watkins",
+    "Ousmane Dembélé": "Ousmane Dembélé",
+    # P
+    "Pablo Sarabia García": "Pablo Sarabia",
+    "Paolo Maldini": "Paolo Maldini",
+    "Patrice Evra": "Patrice Evra",
+    "Patricia Guijarro Gutiérrez": "Patri Guijarro",
+    "Patrik Schick": "Patrik Schick",
+    "Pau Francisco Torres": "Pau Torres",
+    "Paul Breitner": "Paul Breitner",
+    "Paul Pogba": "Paul Pogba",
+    "Paul Scholes": "Paul Scholes",
+    "Paulo Bruno Exequiel Dybala": "Paulo Dybala",
+    "Pedro Eliezer Rodríguez Ledesma": "Pedro",
+    "Phil Foden": "Phil Foden",
+    "Philipp Lahm": "Philipp Lahm",
+    "Philippe Coutinho Correia": "Philippe Coutinho",
+    # R
+    "Radamel Falcao García Zárate": "Falcao",
+    "Rafael Márquez Álvarez": "Rafa Márquez",
+    "Raheem Sterling": "Raheem Sterling",
+    "Raphaël Varane": "Raphaël Varane",
+    "Raúl González Blanco": "Raúl",
+    "Ricardo Izecson dos Santos Leite": "Kaká",
+    "Riyad Mahrez": "Riyad Mahrez",
+    "Robert Lewandowski": "Robert Lewandowski",
+    "Roberto Carlos Montserrat": "Roberto Carlos",
+    "Roberto Firmino Barbosa de Oliveira": "Roberto Firmino",
+    "Roberto Rivelino": "Rivelino",
+    "Rodrigo Hernández Cascante": "Rodri",
+    "Rodrigo Moreno Machado": "Rodrigo",
+    "Ronaldo de Assis Moreira": "Ronaldinho",
+    "Roy Keane": "Roy Keane",
+    "Rui Manuel César Costa": "Rui Costa",
+    "Ryan Giggs": "Ryan Giggs",
+    # S
+    "Sadio Mané": "Sadio Mané",
+    "Salma Paralluelo Ayingono": "Salma Paralluelo",
+    "Samuel Eto''o Fils": "Samuel Eto'o",
+    "Samuel Yves Umtiti": "Samuel Umtiti",
+    "Samantha May Kerr": "Sam Kerr",
+    "Saúl Ñíguez Esclapez": "Saúl Ñíguez",
+    "Sergio Busquets i Burgos": "Sergio Busquets",
+    "Sergio Escudero Palomo": "Sergio Escudero",
+    "Sergio Leonel Agüero del Castillo": "Sergio Agüero",
+    "Sergio Ramos García": "Sergio Ramos",
+    "Steven Gerrard": "Steven Gerrard",
+    "Sébastien Haller": "Sébastien Haller",
+    # T
+    "Thiago Alcântara do Nascimento": "Thiago Alcântara",
+    "Theo Bernard François Hernández": "Theo Hernández",
+    "Thierry Henry": "Thierry Henry",
+    "Thomas Müller": "Thomas Müller",
+    "Toni Kroos": "Toni Kroos",
+    "Trent Alexander-Arnold": "Trent Alexander-Arnold",
+    # V
+    "Virgil van Dijk": "Virgil van Dijk",
+    "Vivianne Miedema": "Vivianne Miedema",
+    # W
+    "Waldyr Pereira": "Didi",
+    "Wayne Mark Rooney": "Wayne Rooney",
+    "Wesley Sneijder": "Wesley Sneijder",
+    "Wout Weghorst": "Wout Weghorst",
+    # X
+    "Xabier Alonso Olano": "Xabi Alonso",
+    "Xavi Simons": "Xavi Simons",
+    "Xavier Hernández Creus": "Xavi Hernández",
+    "Xherdan Shaqiri": "Xherdan Shaqiri",
+    # Y
+    "Yannick Ferreira Carrasco": "Yannick Carrasco",
+    # Z
+    "Zlatan Ibrahimović": "Zlatan Ibrahimović",
+    "Álvaro Borja Morata Martín": "Álvaro Morata",
+    "Ángel Fabián Di María Hernández": "Ángel Di María",
+    "Édson Arantes do Nascimento": "Pelé",
+    "İlkay Gündoğan": "İlkay Gündoğan",
+}
+
+
+def normalize_name(name: str) -> str:
+    """
+    Retourne le nom connu d'un joueur à partir de son nom complet StatsBomb.
+    Si absent du dictionnaire : garde prénom (1er mot) + nom (dernier mot).
+    """
+    if not isinstance(name, str):
+        return name
+    if name in PLAYER_NAMES:
+        return PLAYER_NAMES[name]
+    if len(name) <= 20:
+        return name
+    parts = name.split()
+    if len(parts) >= 2:
+        return f"{parts[0]} {parts[-1]}"
+    return name
+
+
+def normalize_names_column(df: pd.DataFrame, col: str = "player") -> pd.DataFrame:
+    """Applique normalize_name() sur une colonne d'un DataFrame (retourne une copie)."""
+    df = df.copy()
+    if col in df.columns:
+        df[col] = df[col].apply(normalize_name)
+    return df
+
+
+# ============================================================
 # CHARTE GRAPHIQUE — couleurs et styles
 # ============================================================
 
@@ -122,6 +446,8 @@ def shot_map(
         df = df[df["team"].str.contains(team, case=False, na=False)]
     if show_goals_only:
         df = df[df["is_goal"]]
+
+    df = normalize_names_column(df)
 
     # Terrain vertical (attaque vers le haut) — demi-terrain
     pitch = VerticalPitch(
@@ -228,10 +554,9 @@ def player_xg_bar(
     data = df_metrics.sort_values(metric, ascending=False).head(top_n).copy()
     data = data.iloc[::-1]  # Inversion pour que le top soit en haut
 
-    # Noms courts (prénom + nom, max 20 chars)
-    data["short_name"] = data["player"].apply(
-        lambda n: " ".join(n.split()[-2:]) if len(n) > 20 else n
-    )
+    # Normalisation des noms (dictionnaire connu + heuristique)
+    data = normalize_names_column(data)
+    data["short_name"] = data["player"]
 
     fig, ax = plt.subplots(figsize=(10, top_n * 0.6 + 1.5))
     fig.patch.set_facecolor(COLORS["background"])
@@ -296,9 +621,8 @@ def overperformance_chart(
     data = df_metrics.sort_values("overperformance", ascending=False).head(top_n).copy()
     data = data.iloc[::-1]
 
-    data["short_name"] = data["player"].apply(
-        lambda n: " ".join(n.split()[-2:]) if len(n) > 20 else n
-    )
+    data = normalize_names_column(data)
+    data["short_name"] = data["player"]
 
     fig, ax = plt.subplots(figsize=(9, top_n * 0.55 + 1.5))
     fig.patch.set_facecolor(COLORS["background"])
