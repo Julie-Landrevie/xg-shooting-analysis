@@ -6,8 +6,6 @@
 **Julie Landrevie — Football Data Analyst**  
 *Certifiée Sports Analytics (University of Michigan) · Analyse Vidéo & Data dans le Sport (Université de Lorraine)*
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://xg-shooting-analysis.streamlit.app)
-
 ---
 
 ## 📌 Présentation du projet
