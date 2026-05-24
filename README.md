@@ -6,6 +6,8 @@
 **Julie Landrevie — Football Data Analyst**  
 *Certifiée Sports Analytics (University of Michigan) · Analyse Vidéo & Data dans le Sport (Université de Lorraine)*
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://xg-shooting-analysis.streamlit.app)
+
 ---
 
 ## 📌 Présentation du projet
@@ -19,6 +21,8 @@ L'objectif est double :
 ### Pourquoi le xG ?
 
 La conversion brute (buts / tirs) est trop sensible à la variance sur un petit échantillon. Le xG permet de **séparer la qualité des occasions créées de l'efficacité du finisseur**, et d'évaluer les joueurs sur ce qui dépend vraiment d'eux.
+
+🌐 **App en ligne :** [xg-shooting-analysis.streamlit.app](https://xg-shooting-analysis.streamlit.app)
 
 ---
 
@@ -36,9 +40,7 @@ Pour La Liga par exemple, seuls les matchs de **Barcelona** sont couverts (~34-3
 | EURO 2020 | ~51 matchs | Tournoi complet |
 | Coupe du Monde 2022 | ~64 matchs | Tournoi complet |
 
-> **Conséquence pratique :** Les classements "top tireurs" de La Liga reflètent l'échantillon disponible, pas le championnat entier. Pour des analyses inter-équipes représentatives, préférer les tournois complets (EURO, Coupe du Monde) ou la WSL.
-
-L'app affiche automatiquement un avertissement indiquant le nombre de matchs couverts pour chaque compétition.
+> **Conséquence pratique :** Les classements "top tireurs" de La Liga reflètent l'échantillon disponible, pas le championnat entier. Pour des analyses inter-équipes représentatives, préférer les tournois complets (EURO, Coupe du Monde) ou la WSL. L'app affiche automatiquement le nombre de matchs couverts.
 
 ---
 
@@ -98,33 +100,14 @@ xg-shooting-analysis/
 
 ## ⚙️ Installation & Lancement
 
-### Prérequis
-
-- Python 3.9+
-- Git
-
-### Installation
-
 ```bash
-# Cloner le repo
 git clone https://github.com/Julie-Landrevie/xg-shooting-analysis.git
 cd xg-shooting-analysis
-
-# Installer les dépendances
 pip install -r requirements.txt
-```
-
-### Lancer le dashboard
-
-```bash
 streamlit run app.py
 ```
 
-Le dashboard s'ouvre sur `http://localhost:8501`
-
-> **Note :** Le premier chargement d'une compétition télécharge les données StatsBomb (~1-2 min). Les données sont ensuite mises en cache dans `data/cache/` pour les prochaines sessions.
-
-### Lancer le notebook
+> **Note :** Le premier chargement télécharge les données StatsBomb (~1-2 min). Mises en cache ensuite.
 
 ```bash
 jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
@@ -136,12 +119,12 @@ jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
 
 | Catégorie | Outils |
 |-----------|--------|
-| **Données** | [statsbombpy](https://github.com/statsbomb/statsbombpy) — API Python StatsBomb Open Data |
-| **Manipulation** | pandas, numpy |
-| **Visualisation terrain** | [mplsoccer](https://mplsoccer.readthedocs.io/) — terrains de foot avec matplotlib |
+| **Données** | [statsbombpy](https://github.com/statsbomb/statsbombpy) — StatsBomb Open Data |
+| **Manipulation** | pandas · numpy |
+| **Visualisation terrain** | [mplsoccer](https://mplsoccer.readthedocs.io/) |
 | **Graphiques** | matplotlib |
 | **Dashboard** | Streamlit |
-| **Notebook** | Jupyter, nbformat |
+| **Notebook** | Jupyter · nbformat |
 
 ---
 
@@ -161,11 +144,11 @@ jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
 
 ## 💡 Insights clés — La Liga 2020/2021 (matchs Barcelona)
 
-*(Extraits de l'analyse notebook — données partielles, matchs Barcelona uniquement)*
+*(Données partielles — matchs Barcelona uniquement)*
 
-- **Lionel Messi** domine largement avec 195 tirs et ~23 xG sur la saison — meilleur créateur d'occasions de loin
-- **Arturo Vidal** affiche la meilleure overperformance (+3.68) — finisseur très efficace sur peu d'occasions
-- **Martin Braithwaite** est le plus malchanceux (−1.82) — crée des occasions de qualité mais ne les convertit pas
+- **Lionel Messi** domine avec 195 tirs et ~23 xG — meilleur créateur d'occasions de loin
+- **Arturo Vidal** affiche la meilleure overperformance (+3.68) — très efficace sur peu d'occasions
+- **Martin Braithwaite** est le plus malchanceux (−1.82) — crée des occasions de qualité sans les convertir
 - La **surface centrale** concentre le plus de tirs, mais la zone **penalty / but vide** a le xG moyen le plus élevé
 - La **dernière demi-heure** (60–90') est la tranche la plus dangereuse en xG cumulé
 
@@ -176,7 +159,7 @@ jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
 - [ ] Intégration des **key passes** pour analyser les assistants (xA)
 - [ ] Comparaison multi-saisons — évolution d'un joueur dans le temps
 - [ ] Analyse des tirs **sous pression** vs tirs libres
-- [ ] Intégration **SkillCorner tracking data** pour contextualiser les tirs avec les données de mouvement
+- [ ] Intégration **SkillCorner tracking data**
 - [ ] Export PDF des profils joueurs
 
 ---
@@ -185,9 +168,8 @@ jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
 
 | Projet | Description | Lien |
 |--------|-------------|------|
-| **MPG Optimizer** | Fantasy football analytics — scoring, optimiseur XI | [→ Repo](https://github.com/Julie-Landrevie/mpg-optimizer) |
-| **Tactical Dashboard** | Pass Network, xG, Pressing, Heatmaps | [→ Repo](https://github.com/Julie-Landrevie/tactical-dashboard) |
-| **World Cup 2026 Predictor** | Prédictions scores & buteurs Coupe du Monde | [→ Repo](https://github.com/Julie-Landrevie/worldcup-2026-predictor) |
+| **Tactical Dashboard** | Pass Network, xG, Pressing, Heatmaps | [→ Repo](https://github.com/Julie-Landrevie/tactical-dashboard-football) · [→ App](https://tactical-dashboard-football.streamlit.app) |
+| **MPG Optimizer** | Fantasy football analytics | [→ Repo](https://github.com/Julie-Landrevie/mpg-optimizer) · [→ App](https://mpg-optimizer.streamlit.app) |
 
 ---
 
