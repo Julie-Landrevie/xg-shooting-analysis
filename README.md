@@ -145,8 +145,8 @@ jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
 *(Données partielles — matchs Barcelona uniquement)*
 
 - **Lionel Messi** domine avec 195 tirs et ~23 xG — meilleur créateur d'occasions de loin
-- **Arturo Vidal** affiche la meilleure overperformance (+3.68) — très efficace sur peu d'occasions
-- **Martin Braithwaite** est le plus malchanceux (−1.82) — crée des occasions de qualité sans les convertir
+- **Messi** affiche aussi la meilleure overperformance (+7.13 : 30 buts pour 22.87 xG), devant **Ansu Fati** (+2.38, min. 5 tirs)
+- **Martin Braithwaite** est le plus malchanceux (−2.35 : 2 buts pour 4.35 xG, min. 10 tirs) — crée des occasions de qualité sans les convertir
 - La **surface centrale** concentre le plus de tirs, mais la zone **penalty / but vide** a le xG moyen le plus élevé
 - La **dernière demi-heure** (60–90') est la tranche la plus dangereuse en xG cumulé
 
