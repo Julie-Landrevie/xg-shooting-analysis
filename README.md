@@ -178,7 +178,7 @@ jupyter notebook notebooks/01_xg_shooting_analysis.ipynb
 🎓 Sports Analytics — University of Michigan (Coursera)  
 🎓 Analyse Vidéo & Data dans le Sport — Université de Lorraine  
 🎓 Dartfish Certified Analyst
-
+🎓 Once Sport Certified Analyst
 ---
 
 *Données : [StatsBomb Open Data](https://github.com/statsbomb/open-data) — utilisées conformément à la licence open data StatsBomb.*
