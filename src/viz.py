@@ -17,8 +17,9 @@ Visualisations disponibles :
 
 Palette de couleurs :
   On utilise une charte graphique cohérente sur toutes les vues.
-  Fond sombre (#1a1a2e), accents bleu/violet (#4e9af1/#a855f7),
-  buts en or (#f59e0b), non-buts en gris (#475569).
+  Charte de Julie Landrevie (comme le site et les visuels LinkedIn) : fond crème (#f6f1e7),
+  vert d'eau (#0d8f84) pour les données, rouille (#cc4a12) pour les buts, gris (#c9c0b1) pour la comparaison.
+  Les libellés sont en français ou en anglais : set_lang("en").
 """
 
 import warnings
@@ -363,18 +364,59 @@ def normalize_names_column(df: pd.DataFrame, col: str = "player") -> pd.DataFram
 # ============================================================
 
 COLORS = {
-    "background":  "#1a1a2e",   # Fond principal (bleu nuit)
-    "panel":       "#16213e",   # Fond secondaire (panneaux)
-    "accent_blue": "#4e9af1",   # Couleur principale (xG, tirs)
-    "accent_purple":"#a855f7",  # Couleur secondaire (tendances)
-    "goal":        "#f59e0b",   # Buts (or)
-    "no_goal":     "#475569",   # Non-buts (gris ardoise)
-    "text":        "#e2e8f0",   # Texte principal
-    "text_muted":  "#94a3b8",   # Texte secondaire
-    "grid":        "#2d3748",   # Grilles et séparateurs
-    "positive":    "#10b981",   # Overperformance positive (vert)
-    "negative":    "#ef4444",   # Overperformance négative (rouge)
+    "background":  "#f6f1e7",   # Fond crème
+    "panel":       "#f6f1e7",   # Même fond pour les axes
+    "accent_blue": "#0d8f84",   # Couleur principale (xG, tirs) : vert d'eau
+    "accent_purple":"#57534e",  # Couleur secondaire (moyenne, 2e équipe) : encre secondaire
+    "goal":        "#cc4a12",   # Buts : rouille (la seule mise en avant)
+    "no_goal":     "#c9c0b1",   # Non-buts : gris de comparaison
+    "text":        "#1c1917",   # Texte principal
+    "text_muted":  "#57534e",   # Texte secondaire
+    "grid":        "#e4dccd",   # Grilles et séparateurs
+    "positive":    "#0d8f84",   # Surperformance : vert d'eau
+    "negative":    "#cc4a12",   # Sous-performance : rouille
+    "line":        "#c9c0b1",   # Lignes du terrain
 }
+
+# Langue des libellés ("fr" ou "en")
+LANG = "fr"
+
+
+def set_lang(lang: str) -> None:
+    """Choisit la langue des libellés des figures ("fr" ou "en")."""
+    global LANG
+    LANG = "en" if str(lang).lower().startswith("en") else "fr"
+
+
+def _t(fr: str, en: str) -> str:
+    return en if LANG == "en" else fr
+
+
+def _n(x: float, dec: int = 2) -> str:
+    """Nombre à la française (virgule) ou à l'anglaise selon la langue."""
+    s = f"{x:,.{dec}f}"
+    return s if LANG == "en" else s.replace(",", "\u202f").replace(".", ",")
+
+
+def _register_fonts() -> None:
+    """Lato et DM Serif Display (Google Fonts) pour les figures ; sinon police par défaut."""
+    import os
+    import urllib.request
+    from matplotlib import font_manager as fm
+    base = "https://raw.githubusercontent.com/google/fonts/main/ofl/"
+    d = os.path.join(os.path.expanduser("~"), ".fonts_jl")
+    try:
+        os.makedirs(d, exist_ok=True)
+        for f in ["lato/Lato-Regular.ttf", "lato/Lato-Bold.ttf", "dmserifdisplay/DMSerifDisplay-Regular.ttf"]:
+            path = os.path.join(d, os.path.basename(f))
+            if not os.path.exists(path):
+                urllib.request.urlretrieve(base + f, path)
+            fm.fontManager.addfont(path)
+    except Exception:
+        pass
+
+
+_register_fonts()
 
 # Style global matplotlib
 plt.rcParams.update({
@@ -387,23 +429,27 @@ plt.rcParams.update({
     "ytick.color":       COLORS["text_muted"],
     "text.color":        COLORS["text"],
     "grid.color":        COLORS["grid"],
-    "grid.linestyle":    "--",
-    "grid.alpha":        0.5,
-    "font.family":       "DejaVu Sans",
+    "grid.linestyle":    "-",
+    "grid.alpha":        1.0,
+    "font.family":       ["Lato", "DejaVu Sans"],
+    "axes.titleweight":  "normal",
+    "xtick.major.size":  0,
+    "ytick.major.size":  0,
 })
 
 def _fig_title(fig, title: str, subtitle: str = "") -> None:
     """Ajoute un titre principal et un sous-titre à une figure."""
     fig.text(0.5, 0.97, title, ha="center", va="top",
-             fontsize=16, fontweight="bold", color=COLORS["text"])
+             fontsize=17, color=COLORS["text"], fontfamily=["DM Serif Display", "Lato"])
     if subtitle:
         fig.text(0.5, 0.93, subtitle, ha="center", va="top",
                  fontsize=10, color=COLORS["text_muted"])
 
 def _watermark(fig) -> None:
     """Ajoute la signature en bas de figure."""
-    fig.text(0.99, 0.01, "Julie Landrevie — xG Analysis | StatsBomb Open Data",
-             ha="right", va="bottom", fontsize=7, color=COLORS["text_muted"], style="italic")
+    fig.text(0.99, 0.01, _t("Julie Landrevie · Data & performance football · Données StatsBomb Open Data",
+                            "Julie Landrevie · Data & performance football · Data: StatsBomb Open Data"),
+             ha="right", va="bottom", fontsize=7, color=COLORS["text_muted"])
 
 
 # ============================================================
@@ -454,7 +500,7 @@ def shot_map(
         pitch_type="statsbomb",
         half=True,
         pitch_color=COLORS["panel"],
-        line_color="#5a6a7a",
+        line_color=COLORS["line"],
         linewidth=1.2,
     )
 
@@ -462,7 +508,7 @@ def shot_map(
     fig.patch.set_facecolor(COLORS["background"])
 
     if df.empty:
-        ax.text(40, 80, "Aucun tir", ha="center", va="center",
+        ax.text(40, 80, _t("Aucun tir", "No shots"), ha="center", va="center",
                 fontsize=14, color=COLORS["text_muted"])
         return fig
 
@@ -474,7 +520,7 @@ def shot_map(
 
     # Contour blanc si tir cadré
     edge_colors = df["outcome"].map(
-        lambda o: "white" if o in ["Goal", "Saved"] else COLORS["panel"]
+        lambda o: COLORS["text"] if o in ["Goal", "Saved"] else COLORS["panel"]
     )
 
     # Scatter plot des tirs
@@ -492,13 +538,13 @@ def shot_map(
 
     # Légende manuelle
     legend_elements = [
-        mpatches.Patch(facecolor=COLORS["goal"],    label=f"But ({df['is_goal'].sum()})"),
-        mpatches.Patch(facecolor=COLORS["no_goal"], label=f"Non converti ({(~df['is_goal']).sum()})"),
-        mpatches.Patch(facecolor="none", edgecolor="white", linewidth=1.2,
-                       label="Cadré (Goal ou Saved)"),
+        mpatches.Patch(facecolor=COLORS["goal"],    label=_t(f"But ({df['is_goal'].sum()})", f"Goal ({df['is_goal'].sum()})")),
+        mpatches.Patch(facecolor=COLORS["no_goal"], label=_t(f"Non converti ({(~df['is_goal']).sum()})", f"Not scored ({(~df['is_goal']).sum()})")),
+        mpatches.Patch(facecolor="none", edgecolor=COLORS["text"], linewidth=1.2,
+                       label=_t("Cadré (but ou arrêt)", "On target (goal or saved)")),
     ]
     ax.legend(handles=legend_elements, loc="lower center",
-              bbox_to_anchor=(0.5, -0.04), ncol=3,
+              bbox_to_anchor=(0.5, 0.01), ncol=3,
               facecolor=COLORS["panel"], edgecolor=COLORS["grid"],
               labelcolor=COLORS["text"], fontsize=8)
 
@@ -506,7 +552,7 @@ def shot_map(
     xg_total = df["xg"].sum()
     n_goals  = df["is_goal"].sum()
     n_shots  = len(df)
-    ax.text(40, 122, f"{n_shots} tirs  |  {xg_total:.2f} xG  |  {n_goals} buts",
+    ax.text(40, 122, _t(f"{n_shots} tirs  |  {_n(xg_total)} xG  |  {n_goals} buts", f"{n_shots} shots  |  {_n(xg_total)} xG  |  {n_goals} goals"),
             ha="center", va="bottom", fontsize=9,
             color=COLORS["text_muted"],
             path_effects=[pe.withStroke(linewidth=2, foreground=COLORS["background"])])
@@ -566,14 +612,14 @@ def player_xg_bar(
     h = 0.35  # hauteur des barres
 
     bars_xg   = ax.barh(y + h/2, data["xg"],    height=h, color=COLORS["accent_blue"],  alpha=0.85, label="xG")
-    bars_goal = ax.barh(y - h/2, data["goals"],  height=h, color=COLORS["goal"],         alpha=0.85, label="Buts réels")
+    bars_goal = ax.barh(y - h/2, data["goals"],  height=h, color=COLORS["goal"],         alpha=0.85, label=_t("Buts réels", "Actual goals"))
 
     # Valeurs sur les barres
     for bar in bars_xg:
         w = bar.get_width()
         if w > 0.1:
             ax.text(w + 0.05, bar.get_y() + bar.get_height()/2,
-                    f"{w:.1f}", va="center", ha="left", fontsize=7.5, color=COLORS["text"])
+                    _n(w, 1), va="center", ha="left", fontsize=7.5, color=COLORS["text"])
 
     for bar in bars_goal:
         w = bar.get_width()
@@ -583,13 +629,14 @@ def player_xg_bar(
 
     ax.set_yticks(y)
     ax.set_yticklabels(data["short_name"], fontsize=9)
-    ax.set_xlabel("Valeur", color=COLORS["text_muted"])
+    ax.set_xlabel(_t("Valeur", "Value"), color=COLORS["text_muted"])
     ax.legend(facecolor=COLORS["panel"], edgecolor=COLORS["grid"],
               labelcolor=COLORS["text"], fontsize=9)
     ax.grid(axis="x", alpha=0.3)
     ax.spines[["top", "right", "left"]].set_visible(False)
 
-    _fig_title(fig, title, subtitle=f"Top {top_n} joueurs — xG (bleu) vs Buts réels (or)")
+    _fig_title(fig, title, subtitle=_t(f"Top {top_n} joueurs : xG (vert d'eau) et buts réels (rouille)",
+                                          f"Top {top_n} players: xG (teal) and actual goals (rust)"))
     _watermark(fig)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     return fig
@@ -646,18 +693,18 @@ def overperformance_chart(
     for i, (val, yi) in enumerate(zip(data["overperformance"], y)):
         offset = 0.05 if val >= 0 else -0.05
         ha = "left" if val >= 0 else "right"
-        ax.text(val + offset, yi, f"{val:+.2f}",
+        ax.text(val + offset, yi, ("+" if val >= 0 else "−") + _n(abs(val)),
                 va="center", ha=ha, fontsize=7.5, color=COLORS["text"])
 
     ax.set_yticks(y)
     ax.set_yticklabels(data["short_name"], fontsize=9)
-    ax.set_xlabel("Buts − xG", color=COLORS["text_muted"])
+    ax.set_xlabel(_t("Buts − xG", "Goals − xG"), color=COLORS["text_muted"])
     ax.grid(axis="x", alpha=0.2)
     ax.spines[["top", "right", "left"]].set_visible(False)
 
     legend_elements = [
-        mpatches.Patch(facecolor=COLORS["positive"], label="Surperformant (Buts > xG)"),
-        mpatches.Patch(facecolor=COLORS["negative"], label="Sous-performant (Buts < xG)"),
+        mpatches.Patch(facecolor=COLORS["positive"], label=_t("Surperformance (buts > xG)", "Overperformance (goals > xG)")),
+        mpatches.Patch(facecolor=COLORS["negative"], label=_t("Sous-performance (buts < xG)", "Underperformance (goals < xG)")),
     ]
     ax.legend(handles=legend_elements, loc="lower right",
               facecolor=COLORS["panel"], edgecolor=COLORS["grid"],
@@ -708,20 +755,20 @@ def xg_distribution_plot(
 
     # Tous les tirs en bleu
     ax.hist(df["xg"], bins=bins,
-            color=COLORS["accent_blue"], alpha=0.6, label="Tous les tirs", edgecolor=COLORS["panel"])
+            color=COLORS["accent_blue"], alpha=0.6, label=_t("Tous les tirs", "All shots"), edgecolor=COLORS["panel"])
 
     # Buts en or par-dessus
     goals = df[df["is_goal"]]
     ax.hist(goals["xg"], bins=bins,
-            color=COLORS["goal"], alpha=0.85, label=f"Buts ({len(goals)})", edgecolor=COLORS["panel"])
+            color=COLORS["goal"], alpha=0.85, label=_t(f"Buts ({len(goals)})", f"Goals ({len(goals)})"), edgecolor=COLORS["panel"])
 
     # Ligne xG moyen
     xg_mean = df["xg"].mean()
     ax.axvline(xg_mean, color=COLORS["accent_purple"], linestyle="--", linewidth=1.5,
-               label=f"xG moyen = {xg_mean:.3f}")
+               label=_t(f"xG moyen = {_n(xg_mean, 3)}", f"Mean xG = {_n(xg_mean, 3)}"))
 
-    ax.set_xlabel("Valeur xG", color=COLORS["text_muted"])
-    ax.set_ylabel("Nombre de tirs", color=COLORS["text_muted"])
+    ax.set_xlabel(_t("Valeur xG", "xG value"), color=COLORS["text_muted"])
+    ax.set_ylabel(_t("Nombre de tirs", "Number of shots"), color=COLORS["text_muted"])
     ax.legend(facecolor=COLORS["panel"], edgecolor=COLORS["grid"],
               labelcolor=COLORS["text"], fontsize=9)
     ax.grid(axis="y", alpha=0.3)
@@ -732,11 +779,11 @@ def xg_distribution_plot(
     n_shots  = len(df)
     n_goals  = len(goals)
     ax.text(0.98, 0.95,
-            f"{n_shots} tirs  |  {xg_total:.1f} xG total  |  {n_goals} buts",
+            _t(f"{n_shots} tirs  |  {_n(xg_total, 1)} xG au total  |  {n_goals} buts", f"{n_shots} shots  |  {_n(xg_total, 1)} total xG  |  {n_goals} goals"),
             transform=ax.transAxes, ha="right", va="top",
             fontsize=8.5, color=COLORS["text_muted"])
 
-    _fig_title(fig, title, subtitle="Distribution de la qualité des occasions créées")
+    _fig_title(fig, title, subtitle=_t("Distribution de la qualité des occasions créées", "Distribution of chance quality"))
     _watermark(fig)
     fig.tight_layout(rect=[0, 0, 1, 0.92])
     return fig
@@ -774,7 +821,7 @@ def xg_zone_heatmap(
         pitch_type="statsbomb",
         half=True,
         pitch_color=COLORS["panel"],
-        line_color="#5a6a7a",
+        line_color=COLORS["line"],
         linewidth=1.2,
     )
 
@@ -786,7 +833,7 @@ def xg_zone_heatmap(
 
     # Colormap personnalisée : transparent → bleu → or
     cmap = LinearSegmentedColormap.from_list(
-        "xg_heat", ["#16213e", COLORS["accent_blue"], COLORS["goal"]]
+        "xg_heat", [COLORS["background"], "#9fd3cc", COLORS["accent_blue"], "#08645c"]
     )
 
     # Kernel Density sur le terrain (pondéré par xG)
@@ -802,7 +849,7 @@ def xg_zone_heatmap(
     # Colorbar
     cbar = fig.colorbar(hm, ax=ax, orientation="horizontal",
                         pad=0.02, fraction=0.03, aspect=40)
-    cbar.set_label("xG cumulé par zone", color=COLORS["text_muted"], fontsize=8)
+    cbar.set_label(_t("xG cumulé par zone", "Cumulative xG per zone"), color=COLORS["text_muted"], fontsize=8)
     cbar.ax.tick_params(colors=COLORS["text_muted"], labelsize=7)
 
     # Superposer les tirs (petits points)
@@ -815,7 +862,7 @@ def xg_zone_heatmap(
         ax=ax,
     )
 
-    _fig_title(fig, title, subtitle="Zones d'accumulation xG — taille = xG cumulé")
+    _fig_title(fig, title, subtitle=_t("Zones d’accumulation de xG : plus foncé = plus de xG cumulé", "Where xG accumulates: darker = more cumulative xG"))
     _watermark(fig)
     fig.tight_layout(rect=[0, 0, 1, 0.92])
     return fig
@@ -863,7 +910,7 @@ def xg_timeline(
 
         # Ligne d'accumulation
         ax.step(minutes, xg_cum, where="post", color=color, linewidth=2.2,
-                label=f"{label} ({xg_cum[-1]:.2f} xG)", alpha=0.9)
+                label=f"{label} ({_n(xg_cum[-1])} xG)", alpha=0.9)
 
         # Zone remplie sous la courbe
         ax.fill_between(minutes, xg_cum, step="post", alpha=0.12, color=color)
@@ -875,26 +922,24 @@ def xg_timeline(
             ax.plot(g["minute"], xg_at_goal, marker="*", markersize=14,
                     color=COLORS["goal"], zorder=6,
                     path_effects=[pe.withStroke(linewidth=2, foreground=COLORS["background"])])
-            ax.text(g["minute"], xg_at_goal + 0.04, "⚽", fontsize=9,
-                    ha="center", va="bottom", color=COLORS["goal"])
 
-    plot_team_xg(home_team, COLORS["accent_blue"],   home_team.split()[-1])
-    plot_team_xg(away_team, COLORS["accent_purple"],  away_team.split()[-1])
+    plot_team_xg(home_team, COLORS["accent_blue"], home_team)
+    plot_team_xg(away_team, COLORS["no_goal"], away_team)
 
     # Lignes de mi-temps
     ax.axvline(45, color=COLORS["text_muted"], linestyle=":", linewidth=1, alpha=0.5)
-    ax.text(45.5, ax.get_ylim()[1] * 0.95, "Mi-temps",
+    ax.text(45.5, ax.get_ylim()[1] * 0.95, _t("Mi-temps", "Half-time"),
             fontsize=7.5, color=COLORS["text_muted"], va="top")
 
     ax.set_xlabel("Minute", color=COLORS["text_muted"])
-    ax.set_ylabel("xG cumulé", color=COLORS["text_muted"])
+    ax.set_ylabel(_t("xG cumulé", "Cumulative xG"), color=COLORS["text_muted"])
     ax.set_xlim(0, df["minute"].max() + 3)
     ax.legend(facecolor=COLORS["panel"], edgecolor=COLORS["grid"],
               labelcolor=COLORS["text"], fontsize=9)
     ax.grid(alpha=0.25)
     ax.spines[["top", "right"]].set_visible(False)
 
-    _fig_title(fig, title, subtitle="Accumulation xG au fil du match  |  ⭐ = but")
+    _fig_title(fig, title, subtitle=_t("xG cumulé au fil du match  |  ★ = but", "Cumulative xG through the match  |  ★ = goal"))
     _watermark(fig)
     fig.tight_layout(rect=[0, 0, 1, 0.92])
     return fig
