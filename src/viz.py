@@ -17,7 +17,7 @@ Visualisations disponibles :
 
 Palette de couleurs :
   On utilise une charte graphique cohérente sur toutes les vues.
-  Charte de Julie Landrevie (comme le site et les visuels LinkedIn) : fond crème (#f6f1e7),
+  Charte de Julie Landrevie (comme le site et les visuels LinkedIn) : fond du thème affiché (crème ou sombre),
   vert d'eau (#0d8f84) pour les données, rouille (#cc4a12) pour les buts, gris (#c9c0b1) pour la comparaison.
   Les libellés sont en français ou en anglais : set_lang("en").
 """
@@ -363,20 +363,29 @@ def normalize_names_column(df: pd.DataFrame, col: str = "player") -> pd.DataFram
 # CHARTE GRAPHIQUE — couleurs et styles
 # ============================================================
 
-COLORS = {
-    "background":  "#f6f1e7",   # Fond crème
-    "panel":       "#f6f1e7",   # Même fond pour les axes
-    "accent_blue": "#0d8f84",   # Couleur principale (xG, tirs) : vert d'eau
-    "accent_purple":"#57534e",  # Couleur secondaire (moyenne, 2e équipe) : encre secondaire
-    "goal":        "#cc4a12",   # Buts : rouille (la seule mise en avant)
-    "no_goal":     "#c9c0b1",   # Non-buts : gris de comparaison
-    "text":        "#1c1917",   # Texte principal
-    "text_muted":  "#57534e",   # Texte secondaire
-    "grid":        "#e4dccd",   # Grilles et séparateurs
-    "positive":    "#0d8f84",   # Surperformance : vert d'eau
-    "negative":    "#cc4a12",   # Sous-performance : rouille
-    "line":        "#c9c0b1",   # Lignes du terrain
+_PALETTES = {
+    "light": {
+        "background": "#f6f1e7", "panel": "#f6f1e7", "accent_blue": "#0d8f84", "accent_purple": "#57534e",
+        "goal": "#cc4a12", "no_goal": "#c9c0b1", "text": "#1c1917", "text_muted": "#57534e", "grid": "#e4dccd",
+        "positive": "#0d8f84", "negative": "#cc4a12", "line": "#c9c0b1", "seq_low": "#9fd3cc", "seq_high": "#08645c",
+    },
+    "dark": {
+        "background": "#13110f", "panel": "#13110f", "accent_blue": "#2fb3a6", "accent_purple": "#b9b1a6",
+        "goal": "#e8692f", "no_goal": "#6f675d", "text": "#f2ede4", "text_muted": "#b9b1a6", "grid": "#302a24",
+        "positive": "#2fb3a6", "negative": "#e8692f", "line": "#6f675d", "seq_low": "#1e554f", "seq_high": "#89d5cc",
+    },
 }
+# Couleurs du thème affiché (fond, données, buts en rouille, non-buts en gris), remplies par set_theme().
+COLORS: dict = dict(_PALETTES["light"])
+
+
+def set_theme(dark: bool) -> None:
+    """Palette du thème affiché (à appeler à chaque exécution, après jl_ui.setup)."""
+    COLORS.clear()
+    COLORS.update(_PALETTES["dark" if dark else "light"])
+    if "plt" in globals():
+        _rc()
+
 
 # Langue des libellés ("fr" ou "en")
 LANG = "fr"
@@ -418,24 +427,28 @@ def _register_fonts() -> None:
 
 _register_fonts()
 
-# Style global matplotlib
-plt.rcParams.update({
-    "figure.facecolor":  COLORS["background"],
-    "axes.facecolor":    COLORS["panel"],
-    "axes.edgecolor":    COLORS["grid"],
-    "axes.labelcolor":   COLORS["text"],
-    "axes.titlecolor":   COLORS["text"],
-    "xtick.color":       COLORS["text_muted"],
-    "ytick.color":       COLORS["text_muted"],
-    "text.color":        COLORS["text"],
-    "grid.color":        COLORS["grid"],
-    "grid.linestyle":    "-",
-    "grid.alpha":        1.0,
-    "font.family":       ["Lato", "DejaVu Sans"],
-    "axes.titleweight":  "normal",
-    "xtick.major.size":  0,
-    "ytick.major.size":  0,
-})
+# Style global matplotlib (couleurs du thème affiché, remis à jour par set_theme)
+def _rc() -> None:
+    plt.rcParams.update({
+        "figure.facecolor":  COLORS["background"],
+        "axes.facecolor":    COLORS["panel"],
+        "axes.edgecolor":    COLORS["grid"],
+        "axes.labelcolor":   COLORS["text"],
+        "axes.titlecolor":   COLORS["text"],
+        "xtick.color":       COLORS["text_muted"],
+        "ytick.color":       COLORS["text_muted"],
+        "text.color":        COLORS["text"],
+        "grid.color":        COLORS["grid"],
+        "grid.linestyle":    "-",
+        "grid.alpha":        1.0,
+        "font.family":       ["Lato", "DejaVu Sans"],
+        "axes.titleweight":  "normal",
+        "xtick.major.size":  0,
+        "ytick.major.size":  0,
+    })
+
+
+_rc()
 
 def _fig_title(fig, title: str, subtitle: str = "") -> None:
     """Ajoute un titre principal et un sous-titre à une figure."""
@@ -833,7 +846,7 @@ def xg_zone_heatmap(
 
     # Colormap personnalisée : transparent → bleu → or
     cmap = LinearSegmentedColormap.from_list(
-        "xg_heat", [COLORS["background"], "#9fd3cc", COLORS["accent_blue"], "#08645c"]
+        "xg_heat", [COLORS["background"], COLORS["seq_low"], COLORS["accent_blue"], COLORS["seq_high"]]
     )
 
     # Kernel Density sur le terrain (pondéré par xG)

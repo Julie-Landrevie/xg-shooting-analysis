@@ -12,7 +12,7 @@ import streamlit as st
 
 warnings.filterwarnings("ignore")
 
-from jl_ui import footer, fr_num, header, kpi, lang, note, setup, t  # noqa: E402
+from jl_ui import footer, fr_num, header, is_dark, kpi, lang, note, setup, t  # noqa: E402
 
 setup("xG & Shooting — Julie Landrevie", "xG & Shooting — Julie Landrevie", icon="⚽")
 
@@ -25,6 +25,7 @@ from src.viz import (normalize_names_column, overperformance_chart, player_xg_ba
                      xg_distribution_plot, xg_timeline, xg_zone_heatmap)
 
 viz.set_lang(lang())
+viz.set_theme(is_dark())
 
 ALL = "__all__"
 OUTCOME_FR = {"Goal": "But", "Saved": "Arrêté", "Off T": "Hors cadre", "Blocked": "Contré", "Wayward": "Non cadré (raté)",
@@ -202,8 +203,8 @@ with tab2:
         c1, c2 = st.columns([3, 1])
         with c2:
             goals_only = st.checkbox(t("Buts uniquement", "Goals only"), value=False)
-            st.markdown(t("**Lecture**\n- rouille : but\n- gris : non converti\n- contour foncé : tir cadré\n- taille : valeur xG",
-                          "**How to read it**\n- rust: goal\n- grey: not scored\n- dark outline: on target\n- size: xG value"))
+            st.markdown(t("**Lecture**\n- rouille : but\n- gris : non converti\n- contour marqué : tir cadré\n- taille : valeur xG",
+                          "**How to read it**\n- rust: goal\n- grey: not scored\n- bold outline: on target\n- size: xG value"))
         with c1:
             player_label = f" · {selected_player}" if selected_player != ALL else ""
             show(shot_map(shots, title=f"{team_label}{player_label}", show_goals_only=goals_only))
